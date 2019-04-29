@@ -47,54 +47,54 @@ END:
 	movq    %rax, %rdi
 	call    exit
 _test_me:
+	pushq	%rbp
+	movq	%rsp, %rbp
 	pushq	%rdi
-	pushq   %rbp
-	movq    %rsp, %rbp
-	pushq $0 /* local var no. 0 */
-	pushq $0 /* local var no. 1 */
-	pushq $0 /* local var no. 2 */
+	pushq	$0 /* local var no. 0 */
+	pushq	$0 /* local var no. 1 */
+	pushq	$0 /* local var no. 2 */
 	movq	$.STR0, %rsi
 	movq	$.strout, %rdi
 	call	printf
-	movq	8(%rbp)/*a*/ , %rsi
+	movq	-8(%rbp)/*a*/, %rsi
 	movq	$.intout, %rdi
 	call	printf
 	movq	$0x0A, %rdi
 	call	putchar
 	movq	$2, %rax
-	movq	%rax, -8(%rbp)/*a*/ 
+	movq	%rax, -16(%rbp) /*a*/
 	movq	$.STR1, %rsi
 	movq	$.strout, %rdi
 	call	printf
-	movq	-8(%rbp)/*a*/ , %rsi
+	movq	-16(%rbp) /*a*/, %rsi
 	movq	$.intout, %rdi
 	call	printf
 	movq	$0x0A, %rdi
 	call	putchar
 	movq	$3, %rax
-	movq	%rax, -24(%rbp)/*a*/ 
+	movq	%rax, -32(%rbp) /*a*/
 	movq	$4, %rax
-	movq	%rax, -16(%rbp)/*b*/ 
+	movq	%rax, -24(%rbp) /*b*/
 	movq	$.STR2, %rsi
 	movq	$.strout, %rdi
 	call	printf
-	movq	-24(%rbp)/*a*/ , %rsi
+	movq	-32(%rbp) /*a*/, %rsi
 	movq	$.intout, %rdi
 	call	printf
 	movq	$.STR3, %rsi
 	movq	$.strout, %rdi
 	call	printf
-	movq	-16(%rbp)/*b*/ , %rsi
+	movq	-24(%rbp) /*b*/, %rsi
 	movq	$.intout, %rdi
 	call	printf
 	movq	$0x0A, %rdi
 	call	putchar
 	movq	$5, %rax
-	movq	%rax, -16(%rbp)/*b*/ 
+	movq	%rax, -24(%rbp) /*b*/
 	movq	$.STR4, %rsi
 	movq	$.strout, %rdi
 	call	printf
-	movq	-16(%rbp)/*b*/ , %rsi
+	movq	-24(%rbp) /*b*/, %rsi
 	movq	$.intout, %rdi
 	call	printf
 	movq	$.STR5, %rsi
@@ -105,7 +105,7 @@ _test_me:
 	movq	$.STR6, %rsi
 	movq	$.strout, %rdi
 	call	printf
-	movq	-8(%rbp)/*a*/ , %rsi
+	movq	-16(%rbp) /*a*/, %rsi
 	movq	$.intout, %rdi
 	call	printf
 	movq	$0x0A, %rdi
@@ -113,12 +113,12 @@ _test_me:
 	movq	$.STR7, %rsi
 	movq	$.strout, %rdi
 	call	printf
-	movq	8(%rbp)/*a*/ , %rsi
+	movq	-8(%rbp)/*a*/, %rsi
 	movq	$.intout, %rdi
 	call	printf
 	movq	$0x0A, %rdi
 	call	putchar
-	movq	8(%rbp)/*a*/ , %rax
+	movq	-8(%rbp)/*a*/, %rax
 	pushq	%rax
 	movq	$1, %rax
 	subq	%rax, (%rsp)
@@ -126,9 +126,9 @@ _test_me:
 	leave
 	ret
 _start:
-	pushq   %rbp
-	movq    %rsp, %rbp
-	pushq $0 /* local var no. 0 */
+	pushq	%rbp
+	movq	%rsp, %rbp
+	pushq	$0 /* local var no. 0 */
 	pushq	$0 /* Stack padding for 16-byte alignment */
 	movq	$.STR8, %rsi
 	movq	$.strout, %rdi
@@ -137,13 +137,13 @@ _start:
 	call	putchar
 /* function call test_me */
 	movq	$1, %rax
-	movq 	%rax, %rdi
+	movq	%rax, %rdi
 	call 	_test_me
-	movq	%rax, -8(%rbp)/*x*/ 
+	movq	%rax, -8(%rbp) /*x*/
 	movq	$.STR9, %rsi
 	movq	$.strout, %rdi
 	call	printf
-	movq	-8(%rbp)/*x*/ , %rsi
+	movq	-8(%rbp) /*x*/, %rsi
 	movq	$.intout, %rdi
 	call	printf
 	movq	$0x0A, %rdi

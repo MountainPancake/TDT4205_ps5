@@ -39,20 +39,20 @@ END:
 	movq    %rax, %rdi
 	call    exit
 _my_function:
-	pushq	%rsi
+	pushq	%rbp
+	movq	%rsp, %rbp
 	pushq	%rdi
-	pushq   %rbp
-	movq    %rsp, %rbp
+	pushq	%rsi
 	movq	$.STR0, %rsi
 	movq	$.strout, %rdi
 	call	printf
-	movq	8(%rbp)/*s*/ , %rsi
+	movq	-8(%rbp)/*s*/, %rsi
 	movq	$.intout, %rdi
 	call	printf
 	movq	$.STR1, %rsi
 	movq	$.strout, %rdi
 	call	printf
-	movq	16(%rbp)/*t*/ , %rsi
+	movq	-16(%rbp)/*t*/, %rsi
 	movq	$.intout, %rdi
 	call	printf
 	movq	$0x0A, %rdi
@@ -61,17 +61,17 @@ _my_function:
 	leave
 	ret
 _funcall:
-	pushq   %rbp
-	movq    %rsp, %rbp
-	pushq $0 /* local var no. 0 */
+	pushq	%rbp
+	movq	%rsp, %rbp
+	pushq	$0 /* local var no. 0 */
 	pushq	$0 /* Stack padding for 16-byte alignment */
 /* function call my_function */
 	movq	$10, %rax
-	movq 	%rax, %rsi
+	movq	%rax, %rsi
 	movq	$5, %rax
-	movq 	%rax, %rdi
+	movq	%rax, %rdi
 	call 	_my_function
-	movq	%rax, -8(%rbp)/*x*/ 
+	movq	%rax, -8(%rbp) /*x*/
 	movq	$0, %rax
 	leave
 	ret

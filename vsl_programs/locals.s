@@ -46,28 +46,28 @@ END:
 	movq    %rax, %rdi
 	call    exit
 _nesting_scopes:
-	pushq	%rdx
-	pushq	%rsi
+	pushq	%rbp
+	movq	%rsp, %rbp
 	pushq	%rdi
-	pushq   %rbp
-	movq    %rsp, %rbp
-	pushq $0 /* local var no. 0 */
-	pushq $0 /* local var no. 1 */
-	pushq $0 /* local var no. 2 */
-	pushq $0 /* local var no. 3 */
-	pushq $0 /* local var no. 4 */
-	pushq $0 /* local var no. 5 */
-	pushq $0 /* local var no. 6 */
-	pushq $0 /* local var no. 7 */
+	pushq	%rsi
+	pushq	%rdx
+	pushq	$0 /* local var no. 0 */
+	pushq	$0 /* local var no. 1 */
+	pushq	$0 /* local var no. 2 */
+	pushq	$0 /* local var no. 3 */
+	pushq	$0 /* local var no. 4 */
+	pushq	$0 /* local var no. 5 */
+	pushq	$0 /* local var no. 6 */
+	pushq	$0 /* local var no. 7 */
 	pushq	$0 /* Stack padding for 16-byte alignment */
 	movq	$21, %rax
-	movq	%rax, -8(%rbp)/*a*/ 
+	movq	%rax, -32(%rbp) /*a*/
 	movq	$42, %rax
-	movq	%rax, -56(%rbp)/*a*/ 
+	movq	%rax, -80(%rbp) /*a*/
 	movq	$.STR0, %rsi
 	movq	$.strout, %rdi
 	call	printf
-	movq	-56(%rbp)/*a*/ , %rsi
+	movq	-80(%rbp) /*a*/, %rsi
 	movq	$.intout, %rdi
 	call	printf
 	movq	$0x0A, %rdi
@@ -75,7 +75,7 @@ _nesting_scopes:
 	movq	$.STR1, %rsi
 	movq	$.strout, %rdi
 	call	printf
-	movq	-8(%rbp)/*a*/ , %rsi
+	movq	-32(%rbp) /*a*/, %rsi
 	movq	$.intout, %rdi
 	call	printf
 	movq	$0x0A, %rdi
@@ -83,7 +83,7 @@ _nesting_scopes:
 	movq	$.STR2, %rsi
 	movq	$.strout, %rdi
 	call	printf
-	movq	._k/*k*/ , %rsi
+	movq	._k, %rsi
 	movq	$.intout, %rdi
 	call	printf
 	movq	$0x0A, %rdi

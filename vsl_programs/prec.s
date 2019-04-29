@@ -37,14 +37,14 @@ END:
 	movq    %rax, %rdi
 	call    exit
 _unary_minus_precedence:
-	pushq   %rbp
-	movq    %rsp, %rbp
-	pushq $0 /* local var no. 0 */
-	pushq $0 /* local var no. 1 */
+	pushq	%rbp
+	movq	%rsp, %rbp
+	pushq	$0 /* local var no. 0 */
+	pushq	$0 /* local var no. 1 */
 	movq	$-2, %rax
-	movq	%rax, -8(%rbp)/*a*/ 
+	movq	%rax, -8(%rbp) /*a*/
 	movq	$-2, %rax
-	movq	%rax, -16(%rbp)/*b*/ 
+	movq	%rax, -16(%rbp) /*b*/
 	movq	$0, %rax
 	leave
 	ret

@@ -39,9 +39,9 @@ END:
 	movq    %rax, %rdi
 	call    exit
 _hello:
+	pushq	%rbp
+	movq	%rsp, %rbp
 	pushq	%rdi
-	pushq   %rbp
-	movq    %rsp, %rbp
 	pushq	$0 /* Stack padding for 16-byte alignment */
 	movq	$.STR0, %rsi
 	movq	$.strout, %rdi

@@ -40,14 +40,14 @@ END:
 	movq    %rax, %rdi
 	call    exit
 _newton:
+	pushq	%rbp
+	movq	%rsp, %rbp
 	pushq	%rdi
-	pushq   %rbp
-	movq    %rsp, %rbp
 	pushq	$0 /* Stack padding for 16-byte alignment */
 	movq	$.STR0, %rsi
 	movq	$.strout, %rdi
 	call	printf
-	movq	8(%rbp)/*n*/ , %rsi
+	movq	-8(%rbp)/*n*/, %rsi
 	movq	$.intout, %rdi
 	call	printf
 	movq	$.STR1, %rsi
@@ -55,9 +55,9 @@ _newton:
 	call	printf
 /* function call improve */
 	movq	$1, %rax
-	movq 	%rax, %rsi
-	movq	8(%rbp)/*n*/ , %rax
-	movq 	%rax, %rdi
+	movq	%rax, %rsi
+	movq	-8(%rbp)/*n*/, %rax
+	movq	%rax, %rdi
 	call 	_improve
 	movq	%rax, %rsi
 	movq	$.intout, %rdi
@@ -68,17 +68,17 @@ _newton:
 	leave
 	ret
 _improve:
-	pushq	%rsi
+	pushq	%rbp
+	movq	%rsp, %rbp
 	pushq	%rdi
-	pushq   %rbp
-	movq    %rsp, %rbp
-	pushq $0 /* local var no. 0 */
+	pushq	%rsi
+	pushq	$0 /* local var no. 0 */
 	pushq	$0 /* Stack padding for 16-byte alignment */
-	movq	16(%rbp)/*estimate*/ , %rax
+	movq	-16(%rbp)/*estimate*/, %rax
 	pushq	%rax
 	pushq	%rdx
 	pushq	%rdx
-	movq	16(%rbp)/*estimate*/ , %rax
+	movq	-16(%rbp)/*estimate*/, %rax
 	pushq	%rax
 	movq	$2, %rax
 	mulq	(%rsp)
@@ -86,14 +86,14 @@ _improve:
 	popq	%rdx
 	pushq	%rax
 	pushq	%rdx
-	movq	16(%rbp)/*estimate*/ , %rax
+	movq	-16(%rbp)/*estimate*/, %rax
 	pushq	%rax
-	movq	16(%rbp)/*estimate*/ , %rax
+	movq	-16(%rbp)/*estimate*/, %rax
 	mulq	(%rsp)
 	popq	%rdx
 	popq	%rdx
 	pushq	%rax
-	movq	8(%rbp)/*n*/ , %rax
+	movq	-8(%rbp)/*n*/, %rax
 	subq	%rax, (%rsp)
 	popq	%rax
 	cqo
@@ -102,19 +102,34 @@ _improve:
 	popq	%rdx
 	subq	%rax, (%rsp)
 	popq	%rax
-	movq	%rax, -8(%rbp)/*next*/ 
-	movq	-8(%rbp)/*next*/ , %rax
+	movq	%rax, -24(%rbp) /*next*/
+/*IF STATEMENT*/
+	movq	-24(%rbp) /*next*/, %rax
+	pushq	%rax
+	movq	-16(%rbp)/*estimate*/, %rax
+	subq	%rax, (%rsp)
+	popq	%rax
+	pushq	%rax
+	movq	$0, %rax
+/*=*/
+	cmpq	%rax, (%rsp)
+	popq	%rax
+	jz	IFTRUE_0
+/* function call improve */
+	movq	-24(%rbp) /*next*/, %rax
+	movq	%rax, %rsi
+	movq	-8(%rbp)/*n*/, %rax
+	movq	%rax, %rdi
+	call 	_improve
+	leave
+	ret
+	jmp	ENDIF_0
+IFTRUE_0:
+	movq	-24(%rbp) /*next*/, %rax
 	pushq	%rax
 	movq	$1, %rax
 	subq	%rax, (%rsp)
 	popq	%rax
 	leave
 	ret
-/* function call improve */
-	movq	-8(%rbp)/*next*/ , %rax
-	movq 	%rax, %rsi
-	movq	8(%rbp)/*n*/ , %rax
-	movq 	%rax, %rdi
-	call 	_improve
-	leave
-	ret
+ENDIF_0:

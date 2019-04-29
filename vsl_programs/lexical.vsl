@@ -32,7 +32,9 @@ def main() begin                   // def, identifier (func. def.)
     while a > 0 do              // while/do, block statements
     begin
         if a - 3 > 0 then       // if/then/else/FI
+				begin
             a := a - 1
+				end
         else
         begin
             a := a - 1
@@ -42,6 +44,7 @@ def main() begin                   // def, identifier (func. def.)
         print a
     end
 
+		continue
+
     return 0                    // return keyword and number constant
 end
-

@@ -44,27 +44,38 @@ END:
 	movq    %rax, %rdi
 	call    exit
 _simplify:
-	pushq	%rsi
+	pushq	%rbp
+	movq	%rsp, %rbp
 	pushq	%rdi
-	pushq   %rbp
-	movq    %rsp, %rbp
+	pushq	%rsi
 	movq	$-29, %rax
-	movq	%rax, ._a/*a*/ 
+	movq	%rax, ._a
 	movq	$.STR0, %rsi
 	movq	$.strout, %rdi
 	call	printf
-	movq	._a/*a*/ , %rsi
+	movq	._a, %rsi
 	movq	$.intout, %rdi
 	call	printf
 	movq	$0x0A, %rdi
 	call	putchar
+/*IF STATEMENT*/
+	movq	._a, %rax
+	pushq	%rax
+	movq	$0, %rax
+/*=*/
+	cmpq	%rax, (%rsp)
+	popq	%rax
+	jz	IFTRUE_0
+	jmp	ENDIF_0
+IFTRUE_0:
 /* function call simplify */
-	movq	._d/*d*/ , %rax
-	movq 	%rax, %rsi
-	movq	._c/*c*/ , %rax
-	movq 	%rax, %rdi
+	movq	._d, %rax
+	movq	%rax, %rsi
+	movq	._c, %rax
+	movq	%rax, %rdi
 	call 	_simplify
-	movq	%rax, ._b/*b*/ 
+	movq	%rax, ._b
+ENDIF_0:
 	movq	$0, %rax
 	leave
 	ret

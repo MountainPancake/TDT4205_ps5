@@ -41,24 +41,24 @@ END:
 	movq    %rax, %rdi
 	call    exit
 _negatives:
-	pushq   %rbp
-	movq    %rsp, %rbp
-	pushq $0 /* local var no. 0 */
-	pushq $0 /* local var no. 1 */
+	pushq	%rbp
+	movq	%rsp, %rbp
+	pushq	$0 /* local var no. 0 */
+	pushq	$0 /* local var no. 1 */
 	movq	$100, %rax
-	movq	%rax, -8(%rbp)/*a*/ 
+	movq	%rax, -8(%rbp) /*a*/
 	movq	$20, %rax
-	movq	%rax, -16(%rbp)/*b*/ 
+	movq	%rax, -16(%rbp) /*b*/
 	movq	$.STR0, %rsi
 	movq	$.strout, %rdi
 	call	printf
-	movq	-8(%rbp)/*a*/ , %rsi
+	movq	-8(%rbp) /*a*/, %rsi
 	movq	$.intout, %rdi
 	call	printf
 	movq	$.STR1, %rsi
 	movq	$.strout, %rdi
 	call	printf
-	movq	-16(%rbp)/*b*/ , %rsi
+	movq	-16(%rbp) /*b*/, %rsi
 	movq	$.intout, %rdi
 	call	printf
 	movq	$0x0A, %rdi
@@ -67,10 +67,10 @@ _negatives:
 	movq	$.strout, %rdi
 	call	printf
 	pushq	%rdx
-	movq	-16(%rbp)/*b*/ , %rax
+	movq	-16(%rbp) /*b*/, %rax
 	negq	%rax
 	pushq	%rax
-	movq	-8(%rbp)/*a*/ , %rax
+	movq	-8(%rbp) /*a*/, %rax
 	cqo
 	idivq	(%rsp)
 	popq	%rdx

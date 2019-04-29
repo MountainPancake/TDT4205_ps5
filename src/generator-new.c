@@ -18,9 +18,7 @@ static const char *record[6] = {
 };
 
 static symbol_t *current_function = NULL;
-static int current_loop = -1;
 
-int label_count = 0;
 
 
 void
@@ -137,20 +135,13 @@ generate_identifier ( node_t *ident )
             printf ( "._%s", symbol->name );
             break;
         case SYM_PARAMETER:
-            if ( symbol->seq > 5 )
-                    printf ( "%ld", 8+8*(symbol->seq-5) );
-            else
-                printf ( "%ld", -8*(symbol->seq+1) );
-            printf("(%%rbp)/*%s*/", symbol->name);
+            printf ( "%ld(%%rbp)", 8*(symbol->seq+1) );
             break;
         case SYM_LOCAL_VAR:
-            if (current_function->nparms > 6)
-                argument_offset = 6;
-            else
-                argument_offset = current_function->nparms;
-            printf ( "%ld(%%rbp) /*%s*/", -8*(argument_offset+symbol->seq+1), symbol->name );
+            printf ( "%ld(%%rbp)", -8*(symbol->seq+1) );
             break;
     }
+    printf ("/*%s*/ ", symbol->name);
 }
 
 static void
@@ -160,7 +151,7 @@ generate_expression ( node_t *expr )
     {
         printf ( "\tmovq\t" );
         generate_identifier ( expr );
-        printf ( ", %%rax\n" );
+        printf ( ", %%rax\n");
     }
     else if ( expr->type == NUMBER_DATA )
     {
@@ -178,7 +169,7 @@ generate_expression ( node_t *expr )
                 break;
           }
     }
-    else if ( expr->n_children == 2  && expr->data != NULL)
+    else if ( expr->n_children == 2 && expr->data != NULL )
     {
         if ( expr->data != NULL )
         {
@@ -227,17 +218,15 @@ generate_expression ( node_t *expr )
             for (int i = args->n_children-1; i >= 0; i--) {
                 generate_expression(args->children[i]);
                 if (i < 6) {
-                    printf("\tmovq\t%%rax, %s\n", record[i]);
+                    printf("\tmovq \t%%rax, %s\n", record[i]);
                 } else {
-                    printf("\tpushq\t%%rax\n");
+                    printf("\tpushq \t%%rax\n");
                 }
             }
         }
         printf("\tcall \t_%s\n", id->entry->name);
     }
 }
-
-
 
 static void
 generate_assignment_statement ( node_t *statement )
@@ -269,8 +258,8 @@ generate_print_statement ( node_t *statement )
             case IDENTIFIER_DATA:
                 printf ( "\tmovq\t" );
                 generate_identifier ( item );
-                printf ( ", %%rsi\n" );
-                printf ( "\tmovq\t$.intout, %%rdi\n" );
+                printf ( ", %%rsi\n");
+                printf ( "\tmovq\t$.intout, %%rdi\n");
                 puts ( "\tcall\tprintf" );
                 break;
             case EXPRESSION:
@@ -285,67 +274,9 @@ generate_print_statement ( node_t *statement )
     puts ( "\tcall\tputchar" );
 }
 
-static void generate_relation (node_t *rel, int negated, char *jmp_label, int count)
-{
-    generate_expression (rel->children[0]);
-
-    puts("\tpushq\t%rax");
-    generate_expression (rel->children[1]);
-
-    printf("/*%s*/\n", rel->data);
-
-    puts("\tcmpq\t%rax, (%rsp)");
-
-    puts("\tpopq\t%rax");
-
-    //puts("\taddq\t$0x2, %rsp");
-
-    switch (*(char*)rel->data) {
-        case '<':
-            printf("\t%s", negated ? "jge":"jl");
-            break;
-        case '>':
-            printf("\t%s", negated ? "jle":"jg");
-            break;
-        case '=':
-            printf("\t%s", negated ? "jnz":"jz");
-            break;
-    }
-    printf("\t%s%d\n", jmp_label, count);
-}
-
-static void generate_if_statement(node_t *node)
-{
-    int my_count = label_count++;
-    puts("/*IF STATEMENT*/");
-    generate_relation (node->children[0], false, "IFTRUE_", my_count);
-    if(node->n_children == 3) {
-        generate_node(node->children[2]);
-    }
-    printf("\tjmp\tENDIF_%d\n", my_count);
-    printf("IFTRUE_%d:\n", my_count);
-    generate_node(node->children[1]);
-    printf("ENDIF_%d:\n", my_count);
-}
-
-static void generate_while_statement(node_t *node)
-{
-    int my_count = label_count++;
-    current_loop = my_count;
-    //generate_relation(node->children[0], true, "ENDWHILE_", my_count);
-    printf("\tjmp ENDWHILE_%d\n", my_count);
-    printf("WHILE_%d:\n", my_count);
-    generate_node(node->children[1]);
-    current_loop = my_count;
-    printf("ENDWHILE_%d:\n", my_count);
-    generate_relation(node->children[0], false, "WHILE_", my_count);
-    current_loop = -1;
-}
-
 static void
 generate_node ( node_t *node )
 {
-    //printf("/*%s*/\n", node_string[node->type]);
     switch (node->type)
     {
         case PRINT_STATEMENT:
@@ -356,21 +287,13 @@ generate_node ( node_t *node )
             break;
         case RETURN_STATEMENT:
             generate_expression ( node->children[0] );
+            printf ( "\tmov\t%%rbp, %%rsp\n" );
             printf ( "\tleave\n" );
             printf ( "\tret\n" );
             break;
-        case IF_STATEMENT:
-            generate_if_statement(node);
-            break;
-        case WHILE_STATEMENT:
-            generate_while_statement(node);
-            break;
-        case NULL_STATEMENT:
-            if (current_loop >= 0)
-                printf("\tjmp ENDWHILE_%d\n", current_loop);
-            break;
         default:
-            RECUR(node);
+            for ( size_t i=0; i<node->n_children; i++ )
+                generate_node ( node->children[i] );
             break;
     }
 }
@@ -379,19 +302,27 @@ generate_node ( node_t *node )
 void
 generate_function ( symbol_t *function )
 {
-    current_function = function;
+
+    // current_function = function;
     printf ( "_%s:\n", function->name );
-    puts ( "\tpushq\t%rbp" );
-    puts ( "\tmovq\t%rsp, %rbp" );
 
     /* Save arguments in local stack frame */
-    for ( size_t arg=1; arg<=MIN(6,function->nparms); arg++ )
-            printf ( "\tpushq\t%s\n", record[arg-1] );
-    for (size_t i = 0; i < tlhash_size(function->locals)-function->nparms; i++)
-        printf ( "\tpushq\t$0 /* local var no. %zu */\n", i);
+    for (size_t  arg=MIN(6,function->nparms); arg>=1; arg-- )
+        printf ( "\tpushq\t%s\n", record[arg-1] );
+
+    // Save caller stack frame
+    puts ( "\tpushq   %rbp" );
+    puts ( "\tmovq    %rsp, %rbp" );
+
+    /* Save arguments in local stack frame */
+    //for ( size_t arg=1; arg<=MIN(6,function->nparms); arg++ )
+    //    printf ( "\tpushq\t%s\n", record[arg-1] );
+    for (size_t i = 0; i < tlhash_size(function->locals)-function->nparms; i++) {
+        printf ( "\tpushq $0 /* local var no. %zu */\n", i);
+    }
     //Align stack to 16 bytes
     if ( (tlhash_size(function->locals)&1) == 1 )
         puts ( "\tpushq\t$0 /* Stack padding for 16-byte alignment */" );
     generate_node ( function->node );
-    current_function = NULL;
+    //current_function = NULL;
 }

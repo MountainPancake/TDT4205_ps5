@@ -44,22 +44,34 @@ END:
 	movq    %rax, %rdi
 	call    exit
 _gcd:
-	pushq	%rsi
+	pushq	%rbp
+	movq	%rsp, %rbp
 	pushq	%rdi
-	pushq   %rbp
-	movq    %rsp, %rbp
-	pushq $0 /* local var no. 0 */
+	pushq	%rsi
+	pushq	$0 /* local var no. 0 */
 	pushq	$0 /* Stack padding for 16-byte alignment */
+/*IF STATEMENT*/
+	movq	-16(%rbp)/*b*/, %rax
+	pushq	%rax
+	movq	$0, %rax
+/*>*/
+	cmpq	%rax, (%rsp)
+	popq	%rax
+	jg	IFTRUE_0
+	movq	-8(%rbp)/*a*/, %rax
+	movq	%rax, -24(%rbp) /*g*/
+	jmp	ENDIF_0
+IFTRUE_0:
 /* function call gcd */
-	movq	8(%rbp)/*a*/ , %rax
+	movq	-8(%rbp)/*a*/, %rax
 	pushq	%rax
 	pushq	%rdx
-	movq	16(%rbp)/*b*/ , %rax
+	movq	-16(%rbp)/*b*/, %rax
 	pushq	%rax
 	pushq	%rdx
-	movq	16(%rbp)/*b*/ , %rax
+	movq	-16(%rbp)/*b*/, %rax
 	pushq	%rax
-	movq	8(%rbp)/*a*/ , %rax
+	movq	-8(%rbp)/*a*/, %rax
 	cqo
 	idivq	(%rsp)
 	popq	%rdx
@@ -69,60 +81,68 @@ _gcd:
 	popq	%rdx
 	subq	%rax, (%rsp)
 	popq	%rax
-	movq 	%rax, %rsi
-	movq	16(%rbp)/*b*/ , %rax
-	movq 	%rax, %rdi
+	movq	%rax, %rsi
+	movq	-16(%rbp)/*b*/, %rax
+	movq	%rax, %rdi
 	call 	_gcd
-	movq	%rax, -8(%rbp)/*g*/ 
-	movq	8(%rbp)/*a*/ , %rax
-	movq	%rax, -8(%rbp)/*g*/ 
-	movq	-8(%rbp)/*g*/ , %rax
+	movq	%rax, -24(%rbp) /*g*/
+ENDIF_0:
+	movq	-24(%rbp) /*g*/, %rax
 	leave
 	ret
 _euclid:
-	pushq	%rsi
+	pushq	%rbp
+	movq	%rsp, %rbp
 	pushq	%rdi
-	pushq   %rbp
-	movq    %rsp, %rbp
-	movq	8(%rbp)/*a*/ , %rax
+	pushq	%rsi
+/*IF STATEMENT*/
+	movq	-8(%rbp)/*a*/, %rax
+	pushq	%rax
+	movq	$0, %rax
+/*<*/
+	cmpq	%rax, (%rsp)
+	popq	%rax
+	jl	IFTRUE_1
+	jmp	ENDIF_1
+IFTRUE_1:
+	movq	-8(%rbp)/*a*/, %rax
 	negq	%rax
-	movq	%rax, 8(%rbp)/*a*/ 
-	movq	16(%rbp)/*b*/ , %rax
+	movq	%rax, -8(%rbp)/*a*/
+ENDIF_1:
+/*IF STATEMENT*/
+	movq	-16(%rbp)/*b*/, %rax
+	pushq	%rax
+	movq	$0, %rax
+/*<*/
+	cmpq	%rax, (%rsp)
+	popq	%rax
+	jl	IFTRUE_2
+	jmp	ENDIF_2
+IFTRUE_2:
+	movq	-16(%rbp)/*b*/, %rax
 	negq	%rax
-	movq	%rax, 16(%rbp)/*b*/ 
-	movq	$.STR0, %rsi
-	movq	$.strout, %rdi
-	call	printf
-	movq	8(%rbp)/*a*/ , %rsi
-	movq	$.intout, %rdi
-	call	printf
-	movq	$.STR1, %rsi
-	movq	$.strout, %rdi
-	call	printf
-	movq	16(%rbp)/*b*/ , %rsi
-	movq	$.intout, %rdi
-	call	printf
-	movq	$.STR2, %rsi
-	movq	$.strout, %rdi
-	call	printf
+	movq	%rax, -16(%rbp)/*b*/
+ENDIF_2:
+/*IF STATEMENT*/
 /* function call gcd */
-	movq	16(%rbp)/*b*/ , %rax
-	movq 	%rax, %rsi
-	movq	8(%rbp)/*a*/ , %rax
-	movq 	%rax, %rdi
-	call 	_gcd
+	movq	-16(%rbp)/*b*/, %rax
 	movq	%rax, %rsi
-	movq	$.intout, %rdi
-	call	printf
-	movq	$0x0A, %rdi
-	call	putchar
-	movq	8(%rbp)/*a*/ , %rsi
+	movq	-8(%rbp)/*a*/, %rax
+	movq	%rax, %rdi
+	call 	_gcd
+	pushq	%rax
+	movq	$1, %rax
+/*>*/
+	cmpq	%rax, (%rsp)
+	popq	%rax
+	jg	IFTRUE_3
+	movq	-8(%rbp)/*a*/, %rsi
 	movq	$.intout, %rdi
 	call	printf
 	movq	$.STR3, %rsi
 	movq	$.strout, %rdi
 	call	printf
-	movq	16(%rbp)/*b*/ , %rsi
+	movq	-16(%rbp)/*b*/, %rsi
 	movq	$.intout, %rdi
 	call	printf
 	movq	$.STR4, %rsi
@@ -130,6 +150,35 @@ _euclid:
 	call	printf
 	movq	$0x0A, %rdi
 	call	putchar
+	jmp	ENDIF_3
+IFTRUE_3:
+	movq	$.STR0, %rsi
+	movq	$.strout, %rdi
+	call	printf
+	movq	-8(%rbp)/*a*/, %rsi
+	movq	$.intout, %rdi
+	call	printf
+	movq	$.STR1, %rsi
+	movq	$.strout, %rdi
+	call	printf
+	movq	-16(%rbp)/*b*/, %rsi
+	movq	$.intout, %rdi
+	call	printf
+	movq	$.STR2, %rsi
+	movq	$.strout, %rdi
+	call	printf
+/* function call gcd */
+	movq	-16(%rbp)/*b*/, %rax
+	movq	%rax, %rsi
+	movq	-8(%rbp)/*a*/, %rax
+	movq	%rax, %rdi
+	call 	_gcd
+	movq	%rax, %rsi
+	movq	$.intout, %rdi
+	call	printf
+	movq	$0x0A, %rdi
+	call	putchar
+ENDIF_3:
 	movq	$0, %rax
 	leave
 	ret

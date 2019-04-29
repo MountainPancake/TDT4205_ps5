@@ -44,60 +44,98 @@ END:
 	movq    %rax, %rdi
 	call    exit
 _dingdong:
-	pushq	%r9
-	pushq	%r8
-	pushq	%rcx
-	pushq	%rdx
-	pushq	%rsi
+	pushq	%rbp
+	movq	%rsp, %rbp
 	pushq	%rdi
-	pushq   %rbp
-	movq    %rsp, %rbp
-	pushq $0 /* local var no. 0 */
+	pushq	%rsi
+	pushq	%rdx
+	pushq	%rcx
+	pushq	%r8
+	pushq	%r9
+	pushq	$0 /* local var no. 0 */
+/* function call dingdong */
+	movq	16(%rbp)/*g*/, %rax
+	pushq	%rax
+	movq	-48(%rbp)/*f*/, %rax
+	movq	%rax, %r9
+	movq	-40(%rbp)/*e*/, %rax
+	movq	%rax, %r8
+	movq	-32(%rbp)/*d*/, %rax
+	movq	%rax, %rcx
+	movq	-24(%rbp)/*c*/, %rax
+	movq	%rax, %rdx
+	movq	-16(%rbp)/*b*/, %rax
+	movq	%rax, %rsi
+	movq	-8(%rbp)/*a*/, %rax
+	movq	%rax, %rdi
+	call 	_dingdong
+	movq	%rax, -56(%rbp) /*x*/
 	movq	$42, %rax
-	movq	%rax, -8(%rbp)/*x*/ 
-	movq	8(%rbp)/*a*/ , %rsi
+	movq	%rax, -56(%rbp) /*x*/
+	movq	-8(%rbp)/*a*/, %rsi
 	movq	$.intout, %rdi
 	call	printf
-	movq	16(%rbp)/*b*/ , %rsi
+	movq	-16(%rbp)/*b*/, %rsi
 	movq	$.intout, %rdi
 	call	printf
-	movq	24(%rbp)/*c*/ , %rsi
+	movq	-24(%rbp)/*c*/, %rsi
 	movq	$.intout, %rdi
 	call	printf
-	movq	32(%rbp)/*d*/ , %rsi
+	movq	-32(%rbp)/*d*/, %rsi
 	movq	$.intout, %rdi
 	call	printf
-	movq	40(%rbp)/*e*/ , %rsi
+	movq	-40(%rbp)/*e*/, %rsi
 	movq	$.intout, %rdi
 	call	printf
-	movq	48(%rbp)/*f*/ , %rsi
+	movq	-48(%rbp)/*f*/, %rsi
 	movq	$.intout, %rdi
 	call	printf
-	movq	56(%rbp)/*g*/ , %rsi
+	movq	16(%rbp)/*g*/, %rsi
 	movq	$.intout, %rdi
 	call	printf
 	movq	$0x0A, %rdi
 	call	putchar
+/*IF STATEMENT*/
+	movq	-56(%rbp) /*x*/, %rax
+	pushq	%rax
+	movq	$42, %rax
+/*=*/
+	cmpq	%rax, (%rsp)
+	popq	%rax
+	jz	IFTRUE_0
+	movq	$44, %rax
+	movq	%rax, -56(%rbp) /*x*/
+	jmp	ENDIF_0
+IFTRUE_0:
 	movq	$.STR0, %rsi
 	movq	$.strout, %rdi
 	call	printf
 	movq	$0x0A, %rdi
 	call	putchar
 	movq	$43, %rax
-	movq	%rax, -8(%rbp)/*x*/ 
-	movq	$44, %rax
-	movq	%rax, -8(%rbp)/*x*/ 
-	movq	-8(%rbp)/*x*/ , %rsi
+	movq	%rax, -56(%rbp) /*x*/
+ENDIF_0:
+	jmp ENDWHILE_1
+WHILE_1:
+	movq	-56(%rbp) /*x*/, %rsi
 	movq	$.intout, %rdi
 	call	printf
 	movq	$0x0A, %rdi
 	call	putchar
-	movq	-8(%rbp)/*x*/ , %rax
+	movq	-56(%rbp) /*x*/, %rax
 	pushq	%rax
 	movq	$1, %rax
 	subq	%rax, (%rsp)
 	popq	%rax
-	movq	%rax, -8(%rbp)/*x*/ 
-	movq	-8(%rbp)/*x*/ , %rax
+	movq	%rax, -56(%rbp) /*x*/
+ENDWHILE_1:
+	movq	-56(%rbp) /*x*/, %rax
+	pushq	%rax
+	movq	$0, %rax
+/*>*/
+	cmpq	%rax, (%rsp)
+	popq	%rax
+	jg	WHILE_1
+	movq	-56(%rbp) /*x*/, %rax
 	leave
 	ret

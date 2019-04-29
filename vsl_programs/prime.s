@@ -38,45 +38,63 @@ END:
 	movq    %rax, %rdi
 	call    exit
 _factor:
+	pushq	%rbp
+	movq	%rsp, %rbp
 	pushq	%rdi
-	pushq   %rbp
-	movq    %rsp, %rbp
-	pushq $0 /* local var no. 0 */
-	pushq $0 /* local var no. 1 */
+	pushq	$0 /* local var no. 0 */
+	pushq	$0 /* local var no. 1 */
 	pushq	$0 /* Stack padding for 16-byte alignment */
 	pushq	%rdx
 	movq	$2, %rax
 	pushq	%rax
-	movq	8(%rbp)/*n*/ , %rax
+	movq	-8(%rbp)/*n*/, %rax
 	cqo
 	idivq	(%rsp)
 	popq	%rdx
 	popq	%rdx
-	movq	%rax, -8(%rbp)/*f*/ 
-	movq	-8(%rbp)/*f*/ , %rax
+	movq	%rax, -16(%rbp) /*f*/
+	jmp ENDWHILE_0
+WHILE_0:
+	movq	-16(%rbp) /*f*/, %rax
 	pushq	%rax
 	movq	$1, %rax
 	subq	%rax, (%rsp)
 	popq	%rax
-	movq	%rax, -8(%rbp)/*f*/ 
-/* function call factor */
-	movq	-8(%rbp)/*f*/ , %rax
-	movq 	%rax, %rdi
-	call 	_factor
-	movq	%rax, -16(%rbp)/*r*/ 
-/* function call factor */
-	pushq	%rdx
-	movq	-8(%rbp)/*f*/ , %rax
+	movq	%rax, -16(%rbp) /*f*/
+ENDWHILE_0:
+	movq	-8(%rbp)/*n*/, %rax
 	pushq	%rax
-	movq	8(%rbp)/*n*/ , %rax
+	pushq	%rdx
+	pushq	%rdx
+	movq	-16(%rbp) /*f*/, %rax
+	pushq	%rax
+	movq	-8(%rbp)/*n*/, %rax
 	cqo
 	idivq	(%rsp)
 	popq	%rdx
 	popq	%rdx
-	movq 	%rax, %rdi
-	call 	_factor
-	movq	%rax, -16(%rbp)/*r*/ 
-	movq	8(%rbp)/*n*/ , %rsi
+	pushq	%rax
+	movq	-16(%rbp) /*f*/, %rax
+	mulq	(%rsp)
+	popq	%rdx
+	popq	%rdx
+	subq	%rax, (%rsp)
+	popq	%rax
+	pushq	%rax
+	movq	$0, %rax
+/*>*/
+	cmpq	%rax, (%rsp)
+	popq	%rax
+	jg	WHILE_0
+/*IF STATEMENT*/
+	movq	-16(%rbp) /*f*/, %rax
+	pushq	%rax
+	movq	$1, %rax
+/*>*/
+	cmpq	%rax, (%rsp)
+	popq	%rax
+	jg	IFTRUE_1
+	movq	-8(%rbp)/*n*/, %rsi
 	movq	$.intout, %rdi
 	call	printf
 	movq	$.STR0, %rsi
@@ -84,15 +102,35 @@ _factor:
 	call	printf
 	movq	$0x0A, %rdi
 	call	putchar
+	jmp	ENDIF_1
+IFTRUE_1:
+/* function call factor */
+	movq	-16(%rbp) /*f*/, %rax
+	movq	%rax, %rdi
+	call 	_factor
+	movq	%rax, -24(%rbp) /*r*/
+/* function call factor */
+	pushq	%rdx
+	movq	-16(%rbp) /*f*/, %rax
+	pushq	%rax
+	movq	-8(%rbp)/*n*/, %rax
+	cqo
+	idivq	(%rsp)
+	popq	%rdx
+	popq	%rdx
+	movq	%rax, %rdi
+	call 	_factor
+	movq	%rax, -24(%rbp) /*r*/
+ENDIF_1:
 	movq	$0, %rax
 	leave
 	ret
 _main:
-	pushq   %rbp
-	movq    %rsp, %rbp
+	pushq	%rbp
+	movq	%rsp, %rbp
 /* function call factor */
 	movq	$1836311903, %rax
-	movq 	%rax, %rdi
+	movq	%rax, %rdi
 	call 	_factor
 	leave
 	ret

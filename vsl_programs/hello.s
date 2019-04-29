@@ -38,8 +38,8 @@ END:
 	movq    %rax, %rdi
 	call    exit
 _hello:
-	pushq   %rbp
-	movq    %rsp, %rbp
+	pushq	%rbp
+	movq	%rsp, %rbp
 	movq	$.STR0, %rsi
 	movq	$.strout, %rdi
 	call	printf

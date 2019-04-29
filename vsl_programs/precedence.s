@@ -39,54 +39,54 @@ END:
 	movq    %rax, %rdi
 	call    exit
 _precedence:
-	pushq   %rbp
-	movq    %rsp, %rbp
-	pushq $0 /* local var no. 0 */
-	pushq $0 /* local var no. 1 */
-	pushq $0 /* local var no. 2 */
-	pushq $0 /* local var no. 3 */
+	pushq	%rbp
+	movq	%rsp, %rbp
+	pushq	$0 /* local var no. 0 */
+	pushq	$0 /* local var no. 1 */
+	pushq	$0 /* local var no. 2 */
+	pushq	$0 /* local var no. 3 */
 	movq	$2, %rax
-	movq	%rax, -8(%rbp)/*a*/ 
+	movq	%rax, -8(%rbp) /*a*/
 	movq	$3, %rax
-	movq	%rax, -16(%rbp)/*b*/ 
+	movq	%rax, -16(%rbp) /*b*/
 	movq	$1, %rax
-	movq	%rax, -24(%rbp)/*c*/ 
+	movq	%rax, -24(%rbp) /*c*/
 	pushq	%rdx
-	movq	-16(%rbp)/*b*/ , %rax
+	movq	-16(%rbp) /*b*/, %rax
 	pushq	%rax
-	movq	-24(%rbp)/*c*/ , %rax
+	movq	-24(%rbp) /*c*/, %rax
 	subq	%rax, (%rsp)
 	popq	%rax
 	pushq	%rax
-	movq	-8(%rbp)/*a*/ , %rax
+	movq	-8(%rbp) /*a*/, %rax
 	mulq	(%rsp)
 	popq	%rdx
 	popq	%rdx
-	movq	%rax, -32(%rbp)/*d*/ 
+	movq	%rax, -32(%rbp) /*d*/
 	movq	$.STR0, %rsi
 	movq	$.strout, %rdi
 	call	printf
-	movq	-32(%rbp)/*d*/ , %rsi
+	movq	-32(%rbp) /*d*/, %rsi
 	movq	$.intout, %rdi
 	call	printf
 	movq	$0x0A, %rdi
 	call	putchar
 	pushq	%rdx
-	movq	-16(%rbp)/*b*/ , %rax
+	movq	-16(%rbp) /*b*/, %rax
 	pushq	%rax
-	movq	-8(%rbp)/*a*/ , %rax
+	movq	-8(%rbp) /*a*/, %rax
 	mulq	(%rsp)
 	popq	%rdx
 	popq	%rdx
 	pushq	%rax
-	movq	-24(%rbp)/*c*/ , %rax
+	movq	-24(%rbp) /*c*/, %rax
 	subq	%rax, (%rsp)
 	popq	%rax
-	movq	%rax, -32(%rbp)/*d*/ 
+	movq	%rax, -32(%rbp) /*d*/
 	movq	$.STR1, %rsi
 	movq	$.strout, %rdi
 	call	printf
-	movq	-32(%rbp)/*d*/ , %rsi
+	movq	-32(%rbp) /*d*/, %rsi
 	movq	$.intout, %rdi
 	call	printf
 	movq	$0x0A, %rdi

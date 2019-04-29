@@ -48,32 +48,32 @@ END:
 	movq    %rax, %rdi
 	call    exit
 _main:
+	pushq	%rbp
+	movq	%rsp, %rbp
 	pushq	%rdi
-	pushq   %rbp
-	movq    %rsp, %rbp
-	pushq $0 /* local var no. 0 */
-	pushq $0 /* local var no. 1 */
-	pushq $0 /* local var no. 2 */
+	pushq	$0 /* local var no. 0 */
+	pushq	$0 /* local var no. 1 */
+	pushq	$0 /* local var no. 2 */
 	movq	$.STR0, %rsi
 	movq	$.strout, %rdi
 	call	printf
 	movq	$0x0A, %rdi
 	call	putchar
 	movq	$15, %rax
-	movq	%rax, -8(%rbp)/*x*/ 
+	movq	%rax, -16(%rbp) /*x*/
 	movq	$5, %rax
-	movq	%rax, -24(%rbp)/*z*/ 
+	movq	%rax, -32(%rbp) /*z*/
 /* function call test */
-	movq	-24(%rbp)/*z*/ , %rax
-	movq 	%rax, %rsi
-	movq	-8(%rbp)/*x*/ , %rax
-	movq 	%rax, %rdi
+	movq	-32(%rbp) /*z*/, %rax
+	movq	%rax, %rsi
+	movq	-16(%rbp) /*x*/, %rax
+	movq	%rax, %rdi
 	call 	_test
-	movq	%rax, -16(%rbp)/*y*/ 
+	movq	%rax, -24(%rbp) /*y*/
 	movq	$.STR1, %rsi
 	movq	$.strout, %rdi
 	call	printf
-	movq	-16(%rbp)/*y*/ , %rsi
+	movq	-24(%rbp) /*y*/, %rsi
 	movq	$.intout, %rdi
 	call	printf
 	movq	$0x0A, %rdi
@@ -82,83 +82,83 @@ _main:
 	leave
 	ret
 _test:
-	pushq	%rsi
+	pushq	%rbp
+	movq	%rsp, %rbp
 	pushq	%rdi
-	pushq   %rbp
-	movq    %rsp, %rbp
-	pushq $0 /* local var no. 0 */
+	pushq	%rsi
+	pushq	$0 /* local var no. 0 */
 	pushq	$0 /* Stack padding for 16-byte alignment */
 	movq	$.STR2, %rsi
 	movq	$.strout, %rdi
 	call	printf
-	movq	8(%rbp)/*a*/ , %rsi
+	movq	-8(%rbp)/*a*/, %rsi
 	movq	$.intout, %rdi
 	call	printf
 	movq	$.STR3, %rsi
 	movq	$.strout, %rdi
 	call	printf
-	movq	16(%rbp)/*b*/ , %rsi
+	movq	-16(%rbp)/*b*/, %rsi
 	movq	$.intout, %rdi
 	call	printf
 	movq	$0x0A, %rdi
 	call	putchar
-	movq	8(%rbp)/*a*/ , %rax
+	movq	-8(%rbp)/*a*/, %rax
 	pushq	%rax
-	movq	16(%rbp)/*b*/ , %rax
+	movq	-16(%rbp)/*b*/, %rax
 	addq	%rax, (%rsp)
 	popq	%rax
-	movq	%rax, -8(%rbp)/*c*/ 
+	movq	%rax, -24(%rbp) /*c*/
 	movq	$.STR4, %rsi
 	movq	$.strout, %rdi
 	call	printf
-	movq	-8(%rbp)/*c*/ , %rsi
+	movq	-24(%rbp) /*c*/, %rsi
 	movq	$.intout, %rdi
 	call	printf
 	movq	$0x0A, %rdi
 	call	putchar
-	movq	8(%rbp)/*a*/ , %rax
+	movq	-8(%rbp)/*a*/, %rax
 	pushq	%rax
-	movq	16(%rbp)/*b*/ , %rax
+	movq	-16(%rbp)/*b*/, %rax
 	subq	%rax, (%rsp)
 	popq	%rax
-	movq	%rax, -8(%rbp)/*c*/ 
+	movq	%rax, -24(%rbp) /*c*/
 	movq	$.STR5, %rsi
 	movq	$.strout, %rdi
 	call	printf
-	movq	-8(%rbp)/*c*/ , %rsi
+	movq	-24(%rbp) /*c*/, %rsi
 	movq	$.intout, %rdi
 	call	printf
 	movq	$0x0A, %rdi
 	call	putchar
 	pushq	%rdx
-	movq	16(%rbp)/*b*/ , %rax
+	movq	-16(%rbp)/*b*/, %rax
 	pushq	%rax
-	movq	8(%rbp)/*a*/ , %rax
+	movq	-8(%rbp)/*a*/, %rax
 	mulq	(%rsp)
 	popq	%rdx
 	popq	%rdx
-	movq	%rax, -8(%rbp)/*c*/ 
+	movq	%rax, -24(%rbp) /*c*/
 	movq	$.STR6, %rsi
 	movq	$.strout, %rdi
 	call	printf
-	movq	-8(%rbp)/*c*/ , %rsi
+	movq	-24(%rbp) /*c*/, %rsi
 	movq	$.intout, %rdi
 	call	printf
 	movq	$0x0A, %rdi
 	call	putchar
 	pushq	%rdx
-	movq	16(%rbp)/*b*/ , %rax
+	movq	-16(%rbp)/*b*/, %rax
 	pushq	%rax
-	movq	8(%rbp)/*a*/ , %rax
+	movq	-8(%rbp)/*a*/, %rax
 	cqo
 	idivq	(%rsp)
 	popq	%rdx
 	popq	%rdx
-	movq	%rax, -8(%rbp)/*c*/ 
+	movq	%rax, -24(%rbp) /*c*/
 	movq	$.STR7, %rsi
 	movq	$.strout, %rdi
 	call	printf
-	movq	-8(%rbp)/*c*/ , %rsi
+	movq	-24(%rbp) /*c*/, %rsi
 	movq	$.intout, %rdi
 	call	printf
 	movq	$0x0A, %rdi
@@ -166,7 +166,7 @@ _test:
 	movq	$.STR8, %rsi
 	movq	$.strout, %rdi
 	call	printf
-	movq	-8(%rbp)/*c*/ , %rax
+	movq	-24(%rbp) /*c*/, %rax
 	negq	%rax
 	movq	%rax, %rsi
 	movq	$.intout, %rdi
@@ -177,17 +177,17 @@ _test:
 	movq	$.strout, %rdi
 	call	printf
 	pushq	%rdx
-	movq	8(%rbp)/*a*/ , %rax
+	movq	-8(%rbp)/*a*/, %rax
 	pushq	%rax
-	movq	8(%rbp)/*a*/ , %rax
+	movq	-8(%rbp)/*a*/, %rax
 	mulq	(%rsp)
 	popq	%rdx
 	popq	%rdx
 	pushq	%rax
 	pushq	%rdx
-	movq	16(%rbp)/*b*/ , %rax
+	movq	-16(%rbp)/*b*/, %rax
 	pushq	%rax
-	movq	16(%rbp)/*b*/ , %rax
+	movq	-16(%rbp)/*b*/, %rax
 	mulq	(%rsp)
 	popq	%rdx
 	popq	%rdx
@@ -198,9 +198,9 @@ _test:
 	call	printf
 	movq	$0x0A, %rdi
 	call	putchar
-	movq	8(%rbp)/*a*/ , %rax
+	movq	-8(%rbp)/*a*/, %rax
 	pushq	%rax
-	movq	16(%rbp)/*b*/ , %rax
+	movq	-16(%rbp)/*b*/, %rax
 	subq	%rax, (%rsp)
 	popq	%rax
 	leave

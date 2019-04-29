@@ -1,5 +1,5 @@
-TARGETS=$(shell ls *.vsl | sed s/\.vsl/\.s/g)
-#TARGETS=$(shell ls *.vsl | sed s/\.vsl//g)
+#TARGETS=$(shell ls *.vsl | sed s/\.vsl/\.s/g)
+TARGETS=$(shell ls *.vsl | sed s/\.vsl//g)
 all: ${TARGETS}
 
 # Currently the binaries won't compile directly
@@ -17,7 +17,7 @@ all: ${TARGETS}
 #
 
 %: %.s
-	$(CC) -o $@ $< -no-pie
+	$(CC) -g -o $@ $< -no-pie
 
 .PRECIOUS: %.s
 %.s: %.vsl

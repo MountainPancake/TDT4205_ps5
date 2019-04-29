@@ -39,14 +39,14 @@ END:
 	movq    %rax, %rdi
 	call    exit
 _hello:
-	pushq   %rbp
-	movq    %rsp, %rbp
+	pushq	%rbp
+	movq	%rsp, %rbp
 	movq	$.STR0, %rsi
 	movq	$.strout, %rdi
 	call	printf
 /* function call test */
 	movq	$64, %rax
-	movq 	%rax, %rdi
+	movq	%rax, %rdi
 	call 	_test
 	movq	%rax, %rsi
 	movq	$.intout, %rdi
@@ -57,21 +57,21 @@ _hello:
 	leave
 	ret
 _test:
+	pushq	%rbp
+	movq	%rsp, %rbp
 	pushq	%rdi
-	pushq   %rbp
-	movq    %rsp, %rbp
-	pushq $0 /* local var no. 0 */
-	pushq $0 /* local var no. 1 */
-	pushq $0 /* local var no. 2 */
+	pushq	$0 /* local var no. 0 */
+	pushq	$0 /* local var no. 1 */
+	pushq	$0 /* local var no. 2 */
 	movq	$32, %rax
-	movq	%rax, -8(%rbp)/*x*/ 
+	movq	%rax, -16(%rbp) /*x*/
 	movq	$20, %rax
-	movq	%rax, -16(%rbp)/*y*/ 
+	movq	%rax, -24(%rbp) /*y*/
 	movq	$64, %rax
-	movq	%rax, -24(%rbp)/*x*/ 
-	movq	-24(%rbp)/*x*/ , %rax
+	movq	%rax, -32(%rbp) /*x*/
+	movq	-32(%rbp) /*x*/, %rax
 	pushq	%rax
-	movq	8(%rbp)/*a*/ , %rax
+	movq	-8(%rbp)/*a*/, %rax
 	addq	%rax, (%rsp)
 	popq	%rax
 	leave

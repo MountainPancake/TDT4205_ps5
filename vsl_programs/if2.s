@@ -41,30 +41,63 @@ END:
 	movq    %rax, %rdi
 	call    exit
 _test:
+	pushq	%rbp
+	movq	%rsp, %rbp
 	pushq	%rdi
-	pushq   %rbp
-	movq    %rsp, %rbp
 	pushq	$0 /* Stack padding for 16-byte alignment */
-	movq	8(%rbp)/*a*/ , %rsi
+	movq	-8(%rbp)/*a*/, %rsi
 	movq	$.intout, %rdi
 	call	printf
 	movq	$0x0A, %rdi
 	call	putchar
+/*IF STATEMENT*/
+	movq	-8(%rbp)/*a*/, %rax
+	pushq	%rax
+	movq	$10, %rax
+/*>*/
+	cmpq	%rax, (%rsp)
+	popq	%rax
+	jg	IFTRUE_0
+	jmp	ENDIF_0
+IFTRUE_0:
 	movq	$.STR0, %rsi
 	movq	$.strout, %rdi
 	call	printf
 	movq	$0x0A, %rdi
 	call	putchar
+ENDIF_0:
+/*IF STATEMENT*/
+	movq	-8(%rbp)/*a*/, %rax
+	pushq	%rax
+	movq	$10, %rax
+/*<*/
+	cmpq	%rax, (%rsp)
+	popq	%rax
+	jl	IFTRUE_1
+	jmp	ENDIF_1
+IFTRUE_1:
 	movq	$.STR1, %rsi
 	movq	$.strout, %rdi
 	call	printf
 	movq	$0x0A, %rdi
 	call	putchar
+ENDIF_1:
+/*IF STATEMENT*/
+	movq	-8(%rbp)/*a*/, %rax
+	pushq	%rax
+	movq	$10, %rax
+/*=*/
+	cmpq	%rax, (%rsp)
+	popq	%rax
+	jz	IFTRUE_2
+	jmp	ENDIF_2
+IFTRUE_2:
 	movq	$.STR2, %rsi
 	movq	$.strout, %rdi
 	call	printf
 	movq	$0x0A, %rdi
 	call	putchar
+ENDIF_2:
 	movq	$0, %rax
 	leave
 	ret

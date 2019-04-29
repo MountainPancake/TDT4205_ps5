@@ -39,44 +39,71 @@ END:
 	movq    %rax, %rdi
 	call    exit
 _while_test:
-	pushq   %rbp
-	movq    %rsp, %rbp
-	pushq $0 /* local var no. 0 */
+	pushq	%rbp
+	movq	%rsp, %rbp
+	pushq	$0 /* local var no. 0 */
 	pushq	$0 /* Stack padding for 16-byte alignment */
 	movq	$20, %rax
-	movq	%rax, -8(%rbp)/*a*/ 
-	movq	-8(%rbp)/*a*/ , %rsi
+	movq	%rax, -8(%rbp) /*a*/
+	movq	-8(%rbp) /*a*/, %rsi
 	movq	$.intout, %rdi
 	call	printf
 	movq	$0x0A, %rdi
 	call	putchar
+/*IF STATEMENT*/
+	movq	-8(%rbp) /*a*/, %rax
+	pushq	%rax
+	movq	$0, %rax
+/*>*/
+	cmpq	%rax, (%rsp)
+	popq	%rax
+	jg	IFTRUE_0
+	jmp	ENDIF_0
+IFTRUE_0:
 	movq	$.STR0, %rsi
 	movq	$.strout, %rdi
 	call	printf
 	movq	$0x0A, %rdi
 	call	putchar
-	movq	-8(%rbp)/*a*/ , %rax
+ENDIF_0:
+	jmp ENDWHILE_1
+WHILE_1:
+	movq	-8(%rbp) /*a*/, %rax
 	pushq	%rax
 	movq	$1, %rax
 	subq	%rax, (%rsp)
 	popq	%rax
-	movq	%rax, -8(%rbp)/*a*/ 
+	movq	%rax, -8(%rbp) /*a*/
+/*IF STATEMENT*/
+	movq	-8(%rbp) /*a*/, %rax
+	pushq	%rax
+	movq	$10, %rax
+/*=*/
+	cmpq	%rax, (%rsp)
+	popq	%rax
+	jz	IFTRUE_2
+	jmp	ENDIF_2
+IFTRUE_2:
 	movq	$.STR1, %rsi
 	movq	$.strout, %rdi
 	call	printf
 	movq	$0x0A, %rdi
 	call	putchar
-	movq	-8(%rbp)/*a*/ , %rax
-	pushq	%rax
-	movq	$1, %rax
-	subq	%rax, (%rsp)
-	popq	%rax
-	movq	%rax, -8(%rbp)/*a*/ 
-	movq	-8(%rbp)/*a*/ , %rsi
+	jmp ENDWHILE_1
+ENDIF_2:
+	movq	-8(%rbp) /*a*/, %rsi
 	movq	$.intout, %rdi
 	call	printf
 	movq	$0x0A, %rdi
 	call	putchar
+ENDWHILE_1:
+	movq	-8(%rbp) /*a*/, %rax
+	pushq	%rax
+	movq	$0, %rax
+/*>*/
+	cmpq	%rax, (%rsp)
+	popq	%rax
+	jg	WHILE_1
 	movq	$0, %rax
 	leave
 	ret
